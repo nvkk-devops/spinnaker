@@ -20,3 +20,4 @@ tfplan.json
 kubeconfig*
 aws-auth*
 aws-secrets*
+basic/spinnaker-tools
