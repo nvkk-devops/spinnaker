@@ -1,0 +1,78 @@
+# apiVersion: spinnaker.io/v1alpha2
+# kind: SpinnakerService
+# metadata:
+#   name: spinnaker
+# spec:
+#   spinnakerConfig:
+#     config:
+#       version: 1.20.7  # the version of Spinnaker to be deployed
+#       persistentStorage:
+#         persistentStoreType: s3
+#         s3:
+#           bucket: nvkk-spinnaker # Change to a unique name. Spinnaker stores application and pipeline definitions here
+#           rootFolder: front50
+#   # spec.expose - This section defines how Spinnaker should be publicly exposed
+#   expose:
+#     type: service  # Kubernetes LoadBalancer type (service/ingress), note: only "service" is supported for now
+#     service:
+#       type: LoadBalancer
+---
+apiVersion: spinnaker.io/v1alpha2
+# apiVersion: spinnaker.armory.io/v1alpha2
+kind: SpinnakerService
+metadata:
+  name: spinnaker
+spec:
+  spinnakerConfig:
+    config:
+      version: 1.20.7  # the version of Spinnaker to be deployed
+      persistentStorage:
+        persistentStoreType: s3
+        s3:
+          bucket: nvkk-spinnaker # Change to a unique name. Spinnaker stores application and pipeline definitions here
+          rootFolder: front50
+      providers:
+        kubernetes:
+          enabled: true
+          accounts:
+          - name: spinnaker-dev # Account name you want Spinnaker to use to identify the deployment target
+            requiredGroupMembership: []
+            providerVersion: V2
+            permissions: {}
+            dockerRegistries: []
+            configureImagePullSecrets: true
+            cacheThreads: 1
+            namespaces: [] # Change if you only want to deploy to specific namespaces
+            omitNamespaces: []
+            kinds: []
+            omitKinds: []
+            customResources: []
+            cachingPolicies: []
+            oAuthScopes: []
+            onlySpinnakerManaged: false
+            kubeconfigFile: kubeconfig-spinnaker-dev
+          primaryAccount: spinnaker-dev  # Change to a desired account from the accounts array
+      features:
+        artifacts: true # Not strictly necessary for Kubernetes but will be useful in general
+    files:
+      kubeconfig-spinnaker-dev: |
+        apiVersion: v1
+        clusters:
+        - cluster:
+            certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM1ekNDQWMrZ0F3SUJBZ0lCQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwdGFXNXAKYTNWaVpVTkJNQjRYRFRJd01USXhOekUxTURJMU5Gb1hEVE13TVRJeE5qRTFNREkxTkZvd0ZURVRNQkVHQTFVRQpBeE1LYldsdWFXdDFZbVZEUVRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTmlxCkg2aG9wU01id253K2VtU3JYVGR4ajZJbjdKbWNoaGFnZFVnUTBuS0hTZm5SM0FUNXhZTWs4WkRFdkVzUkp3YisKenNpV1huaUFzaUFUdGdMNzJVbFJkdjBYNmVLMU5vV0RQdEVDeFNOTDJFN1lhcC81V01jQndyaWFQbXgyRWEwSwpMQzBVK2Z2ZGhOUzY3QVhuU2p0S0lTbjk1TDBiVUZ4c0NNN0lDcE5qUDl1Zlh5eTNqbnNlaHBsQjVEMzUyLzlaCnc5RG00NW83c0ExUnJvQ3BUQmxiZTRoRHV2eUszVDRneXArMzRWVldwSGFtdVBDR3F6UFk5QkszRVkrUnBlWFgKR2hUWnE0eDZ6T0YxbmI4bnRZNVR4VUM5UVVLVG5UTTBic2I4N21BYkFDWEZWeUhmQXJ4cjJOdWVLcXNpbUw1OApDQlB1dXgvcld3d0IzdkRFWUprQ0F3RUFBYU5DTUVBd0RnWURWUjBQQVFIL0JBUURBZ0trTUIwR0ExVWRKUVFXCk1CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQTBHQ1NxR1NJYjMKRFFFQkN3VUFBNElCQVFDc0ZORzVHankzRjEwMnBwOTVMMXJ1T1pzSThxUkFSZ2FwajRQc2JOVFNXU2lra2RoMgo1V0RQa2FtMGhsNkJYSmtLbkYxZzZNTmVRaHdxSWZ6a3ZZcGdDSStCQVE3ZVF6VUJZWXRtZGhIMzM2aTlxYVVWCmpSS1BSeVVmVFl4bGh6emhrV0I5ZVZCbFAzU2Q2MTR5U2VVbVdneGVUQUlwWjlpRWRhU3djbzd2dkxQdEVoTEQKcXFPUXd3cmpxNW50TWVaUk83aG4yVzdEZ1EzUCtmV3J4eFJMSE1vc2N2blQrdTU3ZVh6SldWRzhPWThHSlhJdQpTTitEL0UrK1lGRUovek5jdzZUbktTRU5qd2FyMHJBYlp0QkJSVWVMWkhUV0xnQUx2Z3NFOVNiU05IQTBQTFEvClRzc2Mxa29vTzZwOGkvWjhHZlVJcUFTbjdleXpzMlJicTBrRQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+            server: https://192.168.99.137:8443
+          name: minikube
+        contexts:
+        - context:
+            cluster: minikube
+            namespace: spinnaker
+            user: spinnaker-token-user
+          name: spinnaker
+        current-context: spinnaker
+        kind: Config
+        preferences: {}
+        users:
+        - name: spinnaker-token-user
+          user:
+            token: eyJhbGciOiJSUzI1NiIsImtpZCI6IkU5Q0JyT0xwOTB3UnFzZFBvM2xVMmJES0Z4ZjVZNm1DRjFISDY5Ri1wM2MifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJzcGlubmFrZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoic3Bpbm5ha2VyLWRldi1zYS10b2tlbi13bGc3biIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJzcGlubmFrZXItZGV2LXNhIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiY2RhY2JmYmUtOTExYS00NzFkLTgwNDEtYWU1OTllOTkyN2UxIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OnNwaW5uYWtlcjpzcGlubmFrZXItZGV2LXNhIn0.q2NjiTjeKzauBck1vPXgYCL1VsRy9p8qmcu7LlUzrLQKUK3V1hNwRip9_JFZq25ZmO61i5Ydg3ltBwJ-YHaHJttEYb8qVssVVMyD5wZ6KnT-l5WONtFAHcQpikWES2ha7aXrsYIUzqxzKGtr0Vgkd7J4lPznhnUpAvU2OCC6tzotZbiQiQt_f3Ik8PQuNL3Va8Te3oKedYN61hit1qWCAD2kBhvNJU8qTl-Qs_9h0PSMt2v3ZCywjbEaiS7BxguXDv4pePD3ILtyOwptlfGwYp7EBMfiR2GmLA7IRtX0uzS81wGJ_wkq8pQsHJ6qfNAXnceUPRSIbMOGxLOaLspbhQ
+

@@ -1,0 +1,96 @@
+# Optional, Apply only of 'spin-front50' Crashloop observed from 'spinnaker' namespace
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+    moniker.spinnaker.io/application: '"spin"'
+    moniker.spinnaker.io/cluster: '"front50"'
+  creationTimestamp: "2021-01-08T15:18:23Z"
+  generation: 2
+  labels:
+    app: spin
+    app.kubernetes.io/managed-by: spinnaker-operator
+    app.kubernetes.io/name: front50
+    app.kubernetes.io/part-of: spinnaker
+    app.kubernetes.io/version: 1.20.7
+    cluster: spin-front50
+  name: spin-front50
+  namespace: spinnaker
+  ownerReferences:
+  - apiVersion: spinnaker.io/v1alpha2
+    blockOwnerDeletion: true
+    controller: true
+    kind: SpinnakerService
+    name: spinnaker
+    uid: cdbd7f08-5b72-48b1-85d7-b4e3f3c64eb0
+  resourceVersion: "88553"
+  selfLink: /apis/apps/v1/namespaces/spinnaker/deployments/spin-front50
+  uid: 5c98ca24-e338-4ad9-91f9-864050c57ad2
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: spin
+      cluster: spin-front50
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: spin
+        app.kubernetes.io/managed-by: spinnaker-operator
+        app.kubernetes.io/name: front50
+        app.kubernetes.io/part-of: spinnaker
+        app.kubernetes.io/version: 1.20.7
+        cluster: spin-front50
+    spec:
+      affinity: {}
+      containers:
+      - env:
+        - name: JAVA_OPTS
+          value: -XX:MaxRAMPercentage=50.0
+        envFrom:
+        - configMapRef:
+                name: aws-secrets-map
+        image: us-docker.pkg.dev/spinnaker-community/docker/front50:0.23.2-20200617020018
+        imagePullPolicy: IfNotPresent
+        lifecycle: {}
+        name: front50
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - wget
+            - --no-check-certificate
+            - --spider
+            - -q
+            - http://localhost:8080/health
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/spinnaker/config
+          name: spin-front50-files-782992563
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: spin-front50-files-782992563
+        secret:
+          defaultMode: 420
+          secretName: spin-front50-files-782992563

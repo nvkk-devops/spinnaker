@@ -1,0 +1,22 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Local .vscode config files
+**/.vscode/*
+
+# others
+*.zip
+.terraform
+.idea
+.DS_Store
+tfplan
+tfplan.json
+*.bak
+.aws-credentials
+kubeconfig*
+aws-auth*
+aws-secrets*
